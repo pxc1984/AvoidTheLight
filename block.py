@@ -1,5 +1,5 @@
 import pygame
-from data.constants_load import load
+from data.useful_functions import load
 
 pygame.init()
 
@@ -18,7 +18,7 @@ class Block(pygame.sprite.Sprite):
         WIN.blit(self.image, self.axes['ul'])
         pygame.display.flip()
 
-    def hide(self): # TODO: hiding doesn't work properly
+    def hide(self):  # TODO: hiding doesn't work properly
         WIN.fill(COLORS['background_color'], (self.axes['ul'], self.axes['dr']))
 
     def set_position(self, x, y):

@@ -1,5 +1,5 @@
 import pygame
-from data.constants_load import load
+from data.useful_functions import load
 
 pygame.init()
 pygame.mixer.init()
