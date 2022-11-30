@@ -12,7 +12,12 @@ class Block(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('data/gfx/tile.png')
-        self.set_position(x, y)
+        self.axes = {
+            'ul': (x * CONSTANTS['SCALE'], y * CONSTANTS['SCALE']),
+            'ur': (x * CONSTANTS['SCALE'], (y + 1) * CONSTANTS['SCALE']),
+            'dl': (x * CONSTANTS['SCALE'], y * CONSTANTS['SCALE']),
+            'dr': ((x + 1) * CONSTANTS['SCALE'], (y + 1) * CONSTANTS['SCALE'])
+        }
 
     def show(self):
         WIN.blit(self.image, self.axes['ul'])

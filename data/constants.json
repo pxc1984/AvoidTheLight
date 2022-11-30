@@ -1,7 +1,7 @@
 {
   "WIDTH": 640,
   "HEIGHT": 384,
-  "FPS": 60,
+  "FPS": 144,
   "SCALE": 64,
   "MAX_HEALTH": 10
 }
