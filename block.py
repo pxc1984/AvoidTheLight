@@ -21,7 +21,6 @@ class Block(pygame.sprite.Sprite):
 
     def show(self):
         WIN.blit(self.image, self.axes['ul'])
-        pygame.display.flip()
 
     def hide(self):  # TODO: hiding doesn't work properly
         WIN.fill(COLORS['background_color'], (self.axes['ul'], self.axes['dr']))
