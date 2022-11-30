@@ -15,14 +15,13 @@ def draw_pause():
     button_quit.draw(WIN)
 
 
-# TODO: сделай изменение размера пилитки в зависимости от окна (pygame.transform)
+# TODO: сделай изменение размера плитки в зависимости от окна (pygame.transform)
 def main():
     run = True
     paused = False
     direction = [0, 0, 0, 0]  # up right down left
     # initializing map
-    map = Map(1)
-
+    level = Map(1)
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -55,15 +54,16 @@ def main():
 
         WIN.fill(COLORS['background_color'])  # фон
         # TODO: сделать отображение фразы чётко по центру с опорой на константы
-        map.draw()
+        level.draw()
         if paused:
-            hero.general_checker(int(300 / CONSTANTS['FPS']), direction)
+            hero.general_checker(int(300 / CONSTANTS['FPS']), direction, level)
             draw_pause()
         else:
             draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, font)
-            hero.general_checker(int(300 / CONSTANTS['FPS']), direction)
+            hero.general_checker(int(300 / CONSTANTS['FPS']), direction, level)
         pygame.display.flip()
-        clock.tick(CONSTANTS['FPS'])
+        time = clock.tick(CONSTANTS['FPS'])
+        print(1000 / time)
     pygame.quit()
 
 
