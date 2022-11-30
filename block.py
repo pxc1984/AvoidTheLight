@@ -18,8 +18,7 @@ class Block(pygame.sprite.Sprite):
             'dl': (x * CONSTANTS['SCALE'], y * CONSTANTS['SCALE']),
             'dr': ((x + 1) * CONSTANTS['SCALE'], (y + 1) * CONSTANTS['SCALE'])
         }
-        self.rect = pygame.Rect(self.axes['ur'],
-                                self.axes['dl'])
+        self.rect = self.image.get_rect()
 
     def show(self):
         WIN.blit(self.image, self.axes['ul'])
@@ -36,4 +35,4 @@ class Block(pygame.sprite.Sprite):
         }
 
     def enter(self):
-        return self.axes['ul']
+        return self.axes

@@ -27,7 +27,7 @@ class Hero(pygame.sprite.Sprite):
         }
         pygame.sprite.Sprite.__init__(self)
         self.image = self.animations['standing']
-        self.rect = pygame.Rect(self.x, self.y, self.x + 64, self.y + 64)
+        # self.rect = self.image.get_rect()
         self.isCollided = {
             'up': False,
             'down': False,
@@ -38,29 +38,51 @@ class Hero(pygame.sprite.Sprite):
             'max': CONSTANTS['FPS'],
             'current': 0
         }
+        self.axes = {
+            'ul': (self.x, self.y),
+            'ur': (self.x + 64, self.y),
+            'dl': (self.x, self.y + 64),
+            'dr': (self.x + 64, self.y + 64)
+        }
 
     def check_collision(self, level: Level):  # Не функция, а одни проблемы. Зачем я ее вообще написал
         for tile in level.map:
-            if self.rect.colliderect(tile.rect):
+            if abs(tile.axes['ul'][0] - self.axes['ul'][0]) <= 64 and abs(tile.axes['ul'][1] - self.axes['ul'][1]) <= 64:
                 return False
-            print(self.rect, tile.rect)
         return True
 
     def move(self, pos):
         self.x += pos[1]
         self.y += pos[0]
-        self.rect = pygame.Rect(self.x, self.y, self.x + 64, self.y + 64)
+        self.axes = {
+            'ul': (self.x, self.y),
+            'ur': (self.x + 64, self.y),
+            'dl': (self.x, self.y + 64),
+            'dr': (self.x + 64, self.y + 64)
+        }
 
     def draw(self):
         WIN.blit(self.animations['standing'], (self.x, self.y))
 
     def general_checker(self, amount, direction, level):
-        if direction[0] and self.y > 0 and self.check_collision(level):
-            self.move((-amount, 0))
-        if direction[1] and self.x + 64 < CONSTANTS['WIDTH'] and self.check_collision(level):
-            self.move((0, amount))
-        if direction[2] and self.y + 64 < CONSTANTS['HEIGHT'] and self.check_collision(level):
-            self.move((amount, 0))
-        if direction[3] and self.x > 0 and self.check_collision(level):
-            self.move((0, -amount))
+        if direction[1] == 1:
+            if self.y > 0 and self.check_collision(level):
+                self.move((-amount, 0))
+            else:
+                self.move((amount, 0))
+        if direction[0] == 1:
+            if self.x + 64 < CONSTANTS['WIDTH'] and self.check_collision(level):
+                self.move((0, amount))
+            else:
+                self.move((0, -amount))
+        if direction[1] == -1:
+            if self.y + 64 < CONSTANTS['HEIGHT'] and self.check_collision(level):
+                self.move((amount, 0))
+            else:
+                self.move((-amount, 0))
+        if direction[0] == -1:
+            if self.x > 0 and self.check_collision(level):
+                self.move((0, -amount))
+            else:
+                self.move((0, amount))
         self.draw()

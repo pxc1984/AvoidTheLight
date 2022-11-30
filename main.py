@@ -19,7 +19,7 @@ def draw_pause():
 def main():
     run = True
     paused = False
-    direction = [0, 0, 0, 0]  # up right down left
+    direction = [0, 0]  # hor vert
     # initializing map
     level = Map(1)
     while run:
@@ -34,23 +34,29 @@ def main():
                     elif paused:
                         paused = False
                     print(paused)
-                if event.key == pygame.K_w and not paused:
-                    direction[0] = True
-                if event.key == pygame.K_d and not paused:
-                    direction[1] = True
-                if event.key == pygame.K_s and not paused:
-                    direction[2] = True
-                if event.key == pygame.K_a and not paused:
-                    direction[3] = True
+                if not paused:
+                    if event.key == pygame.K_w and event.key == pygame.K_s:
+                        direction[1] = 0
+                    elif event.key == pygame.K_w:
+                        direction[1] = 1
+                    elif event.key == pygame.K_s:
+                        direction[1] = -1
+                    if event.key == pygame.K_d and event.key == pygame.K_a:
+                        direction[0] = 0
+                    elif event.key == pygame.K_d:
+                        direction[0] = 1
+                    elif event.key == pygame.K_a:
+                        direction[0] = -1
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:
-                    direction[0] = False
+                    direction[1] = 0
                 if event.key == pygame.K_d:
-                    direction[1] = False
+                    direction[0] = 0
                 if event.key == pygame.K_s:
-                    direction[2] = False
+                    direction[1] = 0
                 if event.key == pygame.K_a:
-                    direction[3] = False
+                    direction[0] = 0
 
         WIN.fill(COLORS['background_color'])  # фон
         # TODO: сделать отображение фразы чётко по центру с опорой на константы
@@ -63,7 +69,6 @@ def main():
             hero.general_checker(int(300 / CONSTANTS['FPS']), direction, level)
         pygame.display.flip()
         time = clock.tick(CONSTANTS['FPS'])
-        print(1000 / time)
     pygame.quit()
 
 
