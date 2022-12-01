@@ -105,3 +105,16 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw(self, surface: pygame.surface.Surface):
         surface.blit(self.image, self.rect)
+
+
+class Light(pygame.sprite.Sprite):
+    def __init__(self, start_pos, *groups):
+        super().__init__(*groups)
+        self.image = pygame.image.load('data/gfx/enemy.png')
+        self.rect = self.image.get_rect(center=start_pos)
+
+    def update(self, surface):
+        self.deal_damage()
+
+    def deal_damage(self):
+        pass
