@@ -12,11 +12,12 @@ WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
 
 class Hero(pygame.sprite.Sprite):
     MAX_HP = 10
-
+    # TODO: нашел интересный баг, при движении влево вверх скорость в 1.5 раза больше чем при движении вправо вниз
+    # заметка: при целочисленном делении это не работает(и при int() тоже)
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('data/gfx/main_character.png')
-        self.rect = self.image.get_rect(x=x, y=y)
+        self.rect = self.image.get_rect(x=x * CONSTANTS['SCALE'], y=y * CONSTANTS['SCALE'])
         self.isCollided = {
             'up': False,
             'down': False,
@@ -24,8 +25,8 @@ class Hero(pygame.sprite.Sprite):
             'right': False
         }
         self.move_speed = {
-            'x': 2,
-            'y': 2
+            'x': 200 // CONSTANTS['FPS'],
+            'y': 200 // CONSTANTS['FPS']
         }
         self.current_speed = {
             'x': 0,
@@ -41,6 +42,7 @@ class Hero(pygame.sprite.Sprite):
             self.rect.x += self.current_speed['x']
             self.checkCollide_x(level)
         self.draw(surface)
+        return round(self.current_speed['x'], 1), round(self.current_speed['y'], 1)
 
     def draw(self, surface: pygame.surface.Surface):
         surface.blit(self.image, self.rect)
@@ -67,14 +69,12 @@ class Hero(pygame.sprite.Sprite):
                     self.rect.right = tile.rect.left
                 elif self.current_speed['x'] < 0:  # left
                     self.rect.left = tile.rect.right
-        if self.rect.topleft[0] <= 0 and self.current_speed['x'] < 0:
+        if self.rect.topleft[0] <= 0 and self.current_speed['x'] < 0:  # left
             self.current_speed['x'] = 0
             self.rect.left = 0
-            print('left')
-        elif self.rect.bottomright[0] >= CONSTANTS['WIDTH'] and self.current_speed['x'] > 0:
+        elif self.rect.bottomright[0] >= CONSTANTS['WIDTH'] and self.current_speed['x'] > 0:  # right
             self.current_speed['x'] = 0
             self.rect.right = CONSTANTS['WIDTH']
-            print('right')
 
     def checkCollide_y(self, level: Level):
         for tile in level.map:
@@ -86,8 +86,6 @@ class Hero(pygame.sprite.Sprite):
         if self.rect.topleft[1] <= 0 and self.current_speed['y'] < 0:  # up
             self.current_speed['y'] = 0
             self.rect.top = 0
-            print('up')
         elif self.rect.bottomright[1] >= CONSTANTS['HEIGHT'] and self.current_speed['y'] > 0:  # down
             self.current_speed['y'] = 0
             self.rect.bottom = CONSTANTS['HEIGHT']
-            print('down')

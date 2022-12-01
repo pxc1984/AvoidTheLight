@@ -17,6 +17,7 @@ def draw_pause():
 
 # TODO: сделай изменение размера пилитки в зависимости от окна (pygame.transform)
 def main():
+    global fps
     run = True
     paused = False
     direction = [0, 0, 0, 0]  # up right down left
@@ -31,18 +32,19 @@ def main():
                 if event.key == pygame.K_SPACE:
                     paused = not paused
 
-
         WIN.fill(COLORS['background_color'])  # фон
         # TODO: сделать отображение фразы чётко по центру с опорой на константы
-        level.draw()
         if paused:
             hero.update(WIN, level, pygame.event.get(), paused)
             draw_pause()
         else:
-            draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, font)
-            hero.update(WIN, level, pygame.event.get(), paused)
+            draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, hint_font)
+            draw_text(WIN, str(hero.update(WIN, level, pygame.event.get(), paused)),
+                      COLORS['background_color'], 560, 20, fps_font)  # Печатает скорость(смотри заметку в Hero)
+        level.draw()
+        draw_text(WIN, str(int(1000 / fps)), COLORS['text_color'], 600, 0, fps_font)
         pygame.display.flip()
-        clock.tick(CONSTANTS['FPS'])
+        fps = clock.tick(CONSTANTS['FPS'])
     pygame.quit()
 
 
@@ -50,8 +52,10 @@ if __name__ == '__main__':
     COLORS, CONSTANTS = load()  # Словари с константами
     WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))  # Основное окно
     pygame.display.set_caption('Avoid the Light')  # Название
+    fps = CONSTANTS['FPS']  # задание фпс для первого кадра
     # Задание меню паузы
-    font = pygame.font.SysFont("arialblack", 30)
+    hint_font = pygame.font.SysFont("arialblack", 30)  # шрифт подсказок
+    fps_font = pygame.font.SysFont("arialblack", 14)
     clock = pygame.time.Clock()
     # Герой
     hero = Hero.Hero(0, 0)
