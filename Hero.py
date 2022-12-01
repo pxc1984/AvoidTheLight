@@ -10,79 +10,84 @@ COLORS, CONSTANTS = load()
 WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
 
 
-# TODO: Написать обработчик состояния света, обработчик перемещения
-
-
 class Hero(pygame.sprite.Sprite):
     MAX_HP = 10
 
     def __init__(self, x, y):
-        # TODO: Добавить музыку и звуковые эффекты при ударах и коллизии
-        self.can_play = True
-        self.hp = Hero.MAX_HP
-        self.x = x
-        self.y = y
-        self.animations = {
-            'standing': pygame.image.load('data/gfx/main_character.png')
-        }
         pygame.sprite.Sprite.__init__(self)
-        self.image = self.animations['standing']
-        # self.rect = self.image.get_rect()
+        self.image = pygame.image.load('data/gfx/main_character.png')
+        self.rect = self.image.get_rect(x=x, y=y)
         self.isCollided = {
             'up': False,
             'down': False,
             'left': False,
             'right': False
         }
-        self.immortalTime = {
-            'max': CONSTANTS['FPS'],
-            'current': 0
+        self.move_speed = {
+            'x': 2,
+            'y': 2
         }
-        self.axes = {
-            'ul': (self.x, self.y),
-            'ur': (self.x + 64, self.y),
-            'dl': (self.x, self.y + 64),
-            'dr': (self.x + 64, self.y + 64)
+        self.current_speed = {
+            'x': 0,
+            'y': 0
         }
 
-    def check_collision(self, level: Level):  # Не функция, а одни проблемы. Зачем я ее вообще написал
+    def update(self, surface: pygame.surface.Surface, level, events: pygame.event.get(), paused):
+        keys = pygame.key.get_pressed()
+        if not paused:
+            self.check_controls(keys, events)
+            self.rect.y += self.current_speed['y']
+            self.checkCollide_y(level)
+            self.rect.x += self.current_speed['x']
+            self.checkCollide_x(level)
+        self.draw(surface)
+
+    def draw(self, surface: pygame.surface.Surface):
+        surface.blit(self.image, self.rect)
+
+    def check_controls(self, keys, events=None):
+        # events можно использовать так как pygame не любит когда много раз вызывают event.get()
+        if keys[pygame.K_a]:
+            self.current_speed['x'] = self.move_speed['x'] * -1  # left
+        if keys[pygame.K_d]:
+            self.current_speed['x'] = self.move_speed['x']  # right
+        if not keys[pygame.K_a] and not keys[pygame.K_d]:
+            self.current_speed['x'] = 0
+        if keys[pygame.K_w]:
+            self.current_speed['y'] = self.move_speed['y'] * -1  # up
+        if keys[pygame.K_s]:
+            self.current_speed['y'] = self.move_speed['y']  # down
+        if not keys[pygame.K_w] and not keys[pygame.K_s]:
+            self.current_speed['y'] = 0
+
+    def checkCollide_x(self, level: Level):
         for tile in level.map:
-            if abs(tile.axes['ul'][0] - self.axes['ul'][0]) <= 64 and abs(tile.axes['ul'][1] - self.axes['ul'][1]) <= 64:
-                return False
-        return True
+            if pygame.sprite.collide_rect(self, tile):
+                if self.current_speed['x'] > 0:  # right
+                    self.rect.right = tile.rect.left
+                elif self.current_speed['x'] < 0:  # left
+                    self.rect.left = tile.rect.right
+        if self.rect.topleft[0] <= 0 and self.current_speed['x'] < 0:
+            self.current_speed['x'] = 0
+            self.rect.left = 0
+            print('left')
+        elif self.rect.bottomright[0] >= CONSTANTS['WIDTH'] and self.current_speed['x'] > 0:
+            self.current_speed['x'] = 0
+            self.rect.right = CONSTANTS['WIDTH']
+            print('right')
 
-    def move(self, pos):
-        self.x += pos[1]
-        self.y += pos[0]
-        self.axes = {
-            'ul': (self.x, self.y),
-            'ur': (self.x + 64, self.y),
-            'dl': (self.x, self.y + 64),
-            'dr': (self.x + 64, self.y + 64)
-        }
-
-    def draw(self):
-        WIN.blit(self.animations['standing'], (self.x, self.y))
-
-    def general_checker(self, amount, direction, level):
-        if direction[1] == 1:
-            if self.y > 0 and self.check_collision(level):
-                self.move((-amount, 0))
-            else:
-                self.move((amount, 0))
-        if direction[0] == 1:
-            if self.x + 64 < CONSTANTS['WIDTH'] and self.check_collision(level):
-                self.move((0, amount))
-            else:
-                self.move((0, -amount))
-        if direction[1] == -1:
-            if self.y + 64 < CONSTANTS['HEIGHT'] and self.check_collision(level):
-                self.move((amount, 0))
-            else:
-                self.move((-amount, 0))
-        if direction[0] == -1:
-            if self.x > 0 and self.check_collision(level):
-                self.move((0, -amount))
-            else:
-                self.move((0, amount))
-        self.draw()
+    def checkCollide_y(self, level: Level):
+        for tile in level.map:
+            if pygame.sprite.collide_rect(self, tile):
+                if self.current_speed['y'] > 0:  # down
+                    self.rect.bottom = tile.rect.top
+                elif self.current_speed['y'] < 0:  # up
+                    self.rect.top = tile.rect.bottom
+        if self.rect.topleft[1] <= 0 and self.current_speed['y'] < 0:  # up
+            self.current_speed['y'] = 0
+            self.rect.top = 0
+            print('up')
+        elif self.rect.bottomright[1] >= CONSTANTS['HEIGHT'] and self.current_speed['y'] > 0:  # down
+            self.current_speed['y'] = 0
+            self.rect.bottom = CONSTANTS['HEIGHT']
+            print('down')

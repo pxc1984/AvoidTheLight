@@ -15,60 +15,34 @@ def draw_pause():
     button_quit.draw(WIN)
 
 
-# TODO: сделай изменение размера плитки в зависимости от окна (pygame.transform)
+# TODO: сделай изменение размера пилитки в зависимости от окна (pygame.transform)
 def main():
     run = True
     paused = False
-    direction = [0, 0]  # hor vert
+    direction = [0, 0, 0, 0]  # up right down left
     # initializing map
-    level = Map(1)
+    level = Map(5)
+
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    if not paused:
-                        paused = True
-                        direction = [0, 0, 0, 0]
-                    elif paused:
-                        paused = False
-                    print(paused)
-                if not paused:
-                    if event.key == pygame.K_w and event.key == pygame.K_s:
-                        direction[1] = 0
-                    elif event.key == pygame.K_w:
-                        direction[1] = 1
-                    elif event.key == pygame.K_s:
-                        direction[1] = -1
-                    if event.key == pygame.K_d and event.key == pygame.K_a:
-                        direction[0] = 0
-                    elif event.key == pygame.K_d:
-                        direction[0] = 1
-                    elif event.key == pygame.K_a:
-                        direction[0] = -1
+                    paused = not paused
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_w:
-                    direction[1] = 0
-                if event.key == pygame.K_d:
-                    direction[0] = 0
-                if event.key == pygame.K_s:
-                    direction[1] = 0
-                if event.key == pygame.K_a:
-                    direction[0] = 0
 
         WIN.fill(COLORS['background_color'])  # фон
         # TODO: сделать отображение фразы чётко по центру с опорой на константы
         level.draw()
         if paused:
-            hero.general_checker(int(300 / CONSTANTS['FPS']), direction, level)
+            hero.update(WIN, level, pygame.event.get(), paused)
             draw_pause()
         else:
             draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, font)
-            hero.general_checker(int(300 / CONSTANTS['FPS']), direction, level)
+            hero.update(WIN, level, pygame.event.get(), paused)
         pygame.display.flip()
-        time = clock.tick(CONSTANTS['FPS'])
+        clock.tick(CONSTANTS['FPS'])
     pygame.quit()
 
 
