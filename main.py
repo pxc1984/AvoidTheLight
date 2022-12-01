@@ -15,7 +15,7 @@ def draw_pause():
     button_quit.draw(WIN)
 
 
-# TODO: сделай изменение размера пилитки в зависимости от окна (pygame.transform)
+# TODO: сделай изменение размера плитки в зависимости от окна (pygame.transform)
 def main():
     global fps
     run = True
@@ -34,11 +34,12 @@ def main():
 
         WIN.fill(COLORS['background_color'])  # фон
         # TODO: сделать отображение фразы чётко по центру с опорой на константы
-        draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, hint_font)
+        draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, hint_font)  # Текст подсказки
+        enemy.update(WIN, level, pygame.event.get(), paused)
         draw_text(WIN, str(hero.update(WIN, level, pygame.event.get(), paused)),
                   COLORS['background_color'], 560, 20, fps_font)  # Печатает скорость(смотри заметку в Hero)
-        level.draw()
-        draw_text(WIN, str(int(1000 / fps)), COLORS['text_color'], 600, 0, fps_font)
+        level.draw()  # уровень
+        draw_text(WIN, str(round(1000 / fps)), COLORS['text_color'], 600, 0, fps_font)  # фпс
         draw_pause() if paused else None
         pygame.display.flip()
         fps = clock.tick(CONSTANTS['FPS'])
@@ -56,6 +57,7 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
     # Герой
     hero = Hero.Hero(0, 0)
+    enemy = Enemy.Enemy(9, 0)
     # Кнопки паузы
     resume_img = pygame.image.load('data/gfx/button_resume.png')
     options_img = pygame.image.load('data/gfx/button_options.png')

@@ -26,7 +26,7 @@ class Enemy(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.brightness = 10
-        self.move_speed = {
+        self.move_speed = {  # сделать зависимость от кадров
             'x': 1,
             'y': 1
         }
@@ -34,11 +34,15 @@ class Enemy(pygame.sprite.Sprite):
             'x': 0,
             'y': 0
         }
+        self.path = {
+            'active': 0,
+            'direction': 0  # stay calm
+        }
 
     def update(self, surface: pygame.surface.Surface, level: Level.Map, events: pygame.event.get(), paused):
         keys = pygame.key.get_pressed()
         if not paused:
-            self.calculate_movement(events)
+            self.calculate_movement()
             self.rect.y += self.current_speed['y']
             self.checkCollide_y(level)
             self.rect.x += self.current_speed['x']
@@ -73,9 +77,31 @@ class Enemy(pygame.sprite.Sprite):
             self.current_speed['y'] = 0
             self.rect.bottom = CONSTANTS['HEIGHT']
 
-    def calculate_movement(self, event=None):
-        pos = (random.randint(0, 7), random.randint(0, 5))  # co-ords where to move
-        direction = random.randint(0, 3)
+    def calculate_movement(self):
+        if self.path['active'] == 64:  # нету пути
+            self.path['active'] = 0
+            self.path['direction'] = random.randint(0, 9)  # direction where to move UNUSED
+            self.path['active'] = True
+            if self.path['direction'] == 0:  # 0 - none
+                self.current_speed['x'], self.current_speed['y'] = 0, 0
+            if self.path['direction'] == 1:  # 1 - up left
+                self.current_speed['x'], self.current_speed['y'] = 1, -1
+            if self.path['direction'] == 2:  # 2 - up
+                self.current_speed['x'], self.current_speed['y'] = 0, -1
+            if self.path['direction'] == 3:  # 3 - up right
+                self.current_speed['x'], self.current_speed['y'] = 1, -1
+            if self.path['direction'] == 4:  # 4 - right
+                self.current_speed['x'], self.current_speed['y'] = 1, 0
+            if self.path['direction'] == 5:  # 5 - down right
+                self.current_speed['x'], self.current_speed['y'] = 1, 1
+            if self.path['direction'] == 6:  # 6 - down
+                self.current_speed['x'], self.current_speed['y'] = 0, 1
+            if self.path['direction'] == 7:  # 7 - down left
+                self.current_speed['x'], self.current_speed['y'] = -1, 1
+            if self.path['direction'] == 8:  # 8 - left
+                self.current_speed['x'], self.current_speed['y'] = -1, 0
+        elif self.path['active'] < 64:  # есть путь, проверка выполнился ли путь
+            self.path['active'] += 1
 
     def draw(self, surface: pygame.surface.Surface):
         surface.blit(self.image, self.rect)
