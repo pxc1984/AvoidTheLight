@@ -34,16 +34,23 @@ def main():
 
         WIN.fill(COLORS['background_color'])  # фон
         # TODO: сделать отображение фразы чётко по центру с опорой на константы
-        draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, hint_font)  # Текст подсказки
-        enemy.update(WIN, level, pygame.event.get(), paused)
-        draw_text(WIN, str(hero.update(WIN, level, pygame.event.get(), paused)),
-                  COLORS['background_color'], 560, 20, fps_font)  # Печатает скорость(смотри заметку в Hero)
-        level.draw()  # уровень
-        draw_text(WIN, str(round(1000 / fps)), COLORS['text_color'], 600, 0, fps_font)  # фпс
+        if hero.can_play:
+            draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, hint_font)  # Текст подсказки
+            enemy.update(WIN, level, pygame.event.get(), paused)
+            draw_text(WIN, str(hero.update(WIN, level, enemy, pygame.event.get(), paused)),
+                      COLORS['background_color'], 560, 20, fps_font)  # Печатает скорость(смотри заметку в Hero)
+            level.draw()  # уровень
+            draw_text(WIN, str(round(1000 / fps)), COLORS['text_color'], 600, 0, fps_font)  # фпс
+        if not hero.can_play:
+            game_over()
         draw_pause() if paused else None
         pygame.display.flip()
         fps = clock.tick(CONSTANTS['FPS'])
     pygame.quit()
+
+
+def game_over():
+    draw_text(WIN, 'GAME OVER', COLORS['text_color'], 150, 150, hint_font)
 
 
 if __name__ == '__main__':
@@ -57,7 +64,7 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
     # Герой
     hero = Hero.Hero(0, 0)
-    enemy = Enemy.Enemy(9, 0)
+    enemy = Enemy.Enemy(random.randint(5, 9), random.randint(1, 5))
     # Кнопки паузы
     resume_img = pygame.image.load('data/gfx/button_resume.png')
     options_img = pygame.image.load('data/gfx/button_options.png')

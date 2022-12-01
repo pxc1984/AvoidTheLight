@@ -3,5 +3,6 @@
   "HEIGHT": 384,
   "FPS": 144,
   "SCALE": 64,
-  "MAX_HEALTH": 10
+  "MAX_HEALTH": 10,
+  "IMMORTAL": 0.7
 }

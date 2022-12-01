@@ -1,6 +1,7 @@
 import pygame
 from data.useful_functions import load
 from map import Map as Level
+import Enemy
 
 pygame.init()
 pygame.mixer.init()
@@ -19,6 +20,7 @@ class Hero(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('data/gfx/main_character.png')
         self.rect = self.image.get_rect(x=x * CONSTANTS['SCALE'], y=y * CONSTANTS['SCALE'])
+        self.can_play = True
         self.isCollided = {
             'up': False,
             'down': False,
@@ -33,15 +35,21 @@ class Hero(pygame.sprite.Sprite):
             'x': 0,
             'y': 0
         }
+        self.hp = Hero.MAX_HP
+        self.immortalTime = {
+            'max': CONSTANTS['IMMORTAL'] * CONSTANTS['FPS'],
+            'current': 0
+        }
 
-    def update(self, surface: pygame.surface.Surface, level, events: pygame.event.get(), paused):
+    def update(self, surface: pygame.surface.Surface, level, enemy: Enemy.Enemy, events: pygame.event.get(), paused):
         keys = pygame.key.get_pressed()
-        if not paused:
+        if not paused and self.can_play:
             self.check_controls(keys, events)
             self.rect.y += self.current_speed['y']
             self.checkCollide_y(level)
             self.rect.x += self.current_speed['x']
             self.checkCollide_x(level)
+            self.check_damage(enemy)
         self.draw(surface)
         return round(self.current_speed['x'], 1), round(self.current_speed['y'], 1)
 
@@ -90,3 +98,23 @@ class Hero(pygame.sprite.Sprite):
         elif self.rect.bottomright[1] >= CONSTANTS['HEIGHT'] and self.current_speed['y'] > 0:  # down
             self.current_speed['y'] = 0
             self.rect.bottom = CONSTANTS['HEIGHT']
+
+    def check_damage(self, enemy: Enemy.Enemy):
+        if pygame.sprite.collide_rect(self, enemy):
+            if not self.immortalTime['current']:
+                self.get_damage(1)
+                self.immortalTime['current'] = 1
+        if self.immortalTime['current'] > 0:
+            self.immortalTime['current'] += 1
+            if self.immortalTime['current'] >= self.immortalTime['max']:
+                self.immortalTime['current'] = 0
+
+    def get_damage(self, damage):
+        self.hp -= damage
+        print(self.hp)
+        if self.hp <= 0:
+            self.death()
+
+    def death(self):
+        print('death')
+        self.can_play = False
