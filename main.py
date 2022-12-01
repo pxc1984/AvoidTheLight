@@ -50,7 +50,7 @@ def main():
 
 
 def game_over():
-    draw_text(WIN, 'GAME OVER', COLORS['text_color'], 150, 150, hint_font)
+    draw_text(WIN, 'GAME OVER', COLORS['game_over'], 150, 150, over_font)
 
 
 if __name__ == '__main__':
@@ -61,6 +61,7 @@ if __name__ == '__main__':
     # Задание меню паузы
     hint_font = pygame.font.SysFont("arialblack", 30)  # шрифт подсказок
     fps_font = pygame.font.SysFont("arialblack", 14)
+    over_font = pygame.font.SysFont("arialblack", 50)
     clock = pygame.time.Clock()
     # Герой
     hero = Hero.Hero(0, 0)
