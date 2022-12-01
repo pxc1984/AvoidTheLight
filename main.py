@@ -34,15 +34,12 @@ def main():
 
         WIN.fill(COLORS['background_color'])  # фон
         # TODO: сделать отображение фразы чётко по центру с опорой на константы
-        if paused:
-            hero.update(WIN, level, pygame.event.get(), paused)
-            draw_pause()
-        else:
-            draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, hint_font)
-            draw_text(WIN, str(hero.update(WIN, level, pygame.event.get(), paused)),
-                      COLORS['background_color'], 560, 20, fps_font)  # Печатает скорость(смотри заметку в Hero)
+        draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, hint_font)
+        draw_text(WIN, str(hero.update(WIN, level, pygame.event.get(), paused)),
+                  COLORS['background_color'], 560, 20, fps_font)  # Печатает скорость(смотри заметку в Hero)
         level.draw()
         draw_text(WIN, str(int(1000 / fps)), COLORS['text_color'], 600, 0, fps_font)
+        draw_pause() if paused else None
         pygame.display.flip()
         fps = clock.tick(CONSTANTS['FPS'])
     pygame.quit()
