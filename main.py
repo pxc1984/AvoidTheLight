@@ -2,25 +2,25 @@ import pygame
 from data.useful_functions import load, draw_text
 import data.gfx.button
 import Enemy
-import powerup
+# import powerup
 import Hero
 import random
 from map import Map
 
 
 def draw_pause():
+    global paused, run
     if button_resume.draw(WIN):
         paused = False
     button_options.draw(WIN)
-    button_quit.draw(WIN)
+    if button_quit.draw(WIN):
+        run = False
 
 
 # TODO: сделай изменение размера плитки в зависимости от окна (pygame.transform)
 def main():
-    global fps
+    global fps, paused, run
     run = True
-    paused = False
-    direction = [0, 0, 0, 0]  # up right down left
     # initializing map
     level = Map(5)
 
@@ -73,4 +73,6 @@ if __name__ == '__main__':
     button_resume = data.gfx.button.Button(225, 34, resume_img, 1)
     button_options = data.gfx.button.Button(217, 150, options_img, 1)
     button_quit = data.gfx.button.Button(256, 266, quit_img, 1)
+    paused = False
+    run = True
     main()
