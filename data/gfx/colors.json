@@ -1,4 +1,5 @@
 {
   "background_color": [16, 18, 22],
-  "text_color": [30, 32, 36]
+  "text_color": [30, 32, 36],
+  "system_color": [255, 255, 255]
 }

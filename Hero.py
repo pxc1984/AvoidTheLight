@@ -12,6 +12,7 @@ WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
 
 class Hero(pygame.sprite.Sprite):
     MAX_HP = 10
+
     # TODO: нашел интересный баг, при движении влево вверх скорость в 1.5 раза больше чем при движении вправо вниз
     # заметка: при целочисленном делении это не работает(и при int() тоже)
     def __init__(self, x, y):
@@ -25,8 +26,8 @@ class Hero(pygame.sprite.Sprite):
             'right': False
         }
         self.move_speed = {
-            'x': 200 // CONSTANTS['FPS'],
-            'y': 200 // CONSTANTS['FPS']
+            'x': 288 // CONSTANTS['FPS'],
+            'y': 288 // CONSTANTS['FPS']
         }
         self.current_speed = {
             'x': 0,

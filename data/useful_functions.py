@@ -10,6 +10,6 @@ def load():
     return colors, constants
 
 
-def draw_text(screen, text, text_col, x, y, font):
+def draw_text(screen: pygame.surface.Surface, text: str, text_col: pygame.color, x: int, y: int, font: pygame.font):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))

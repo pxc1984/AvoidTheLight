@@ -38,7 +38,7 @@ class Enemy(pygame.sprite.Sprite):
     def update(self, surface: pygame.surface.Surface, level: Level.Map, events: pygame.event.get(), paused):
         keys = pygame.key.get_pressed()
         if not paused:
-            self.calculate_movement(keys, events)
+            self.calculate_movement(events)
             self.rect.y += self.current_speed['y']
             self.checkCollide_y(level)
             self.rect.x += self.current_speed['x']
@@ -73,9 +73,9 @@ class Enemy(pygame.sprite.Sprite):
             self.current_speed['y'] = 0
             self.rect.bottom = CONSTANTS['HEIGHT']
 
-    def calculate_movement(self):
+    def calculate_movement(self, event=None):
         pos = (random.randint(0, 7), random.randint(0, 5))  # co-ords where to move
-
+        direction = random.randint(0, 3)
 
     def draw(self, surface: pygame.surface.Surface):
         surface.blit(self.image, self.rect)
