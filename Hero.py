@@ -2,6 +2,7 @@ import pygame
 from data.useful_functions import load
 from map import Map as Level
 import Enemy
+import math
 
 pygame.init()
 pygame.mixer.init()
@@ -41,7 +42,7 @@ class Hero(pygame.sprite.Sprite):
             'current': 0
         }
 
-    def update(self, surface: pygame.surface.Surface, level, enemy: Enemy.Enemy, events: pygame.event.get(), paused):
+    def update(self, surface: pygame.surface.Surface, level, enemy, events: pygame.event.get(), paused):
         keys = pygame.key.get_pressed()
         if not paused and self.can_play:
             self.check_controls(keys, events)
@@ -49,7 +50,7 @@ class Hero(pygame.sprite.Sprite):
             self.checkCollide_y(level)
             self.rect.x += self.current_speed['x']
             self.checkCollide_x(level)
-            self.check_damage(enemy)
+            self.check_damage(enemy, level)
         self.draw(surface)
         return round(self.current_speed['x'], 1), round(self.current_speed['y'], 1)
 
@@ -99,11 +100,12 @@ class Hero(pygame.sprite.Sprite):
             self.current_speed['y'] = 0
             self.rect.bottom = CONSTANTS['HEIGHT']
 
-    def check_damage(self, enemy: Enemy.Enemy):
-        if pygame.sprite.collide_rect(self, enemy):
-            if not self.immortalTime['current']:
-                self.get_damage(1)
-                self.immortalTime['current'] = 1
+    def check_damage(self, enemy, level: Level):
+        for tile in level.map:
+            if math.sqrt((self.rect.centerx - enemy.rect.centerx)**2 + (self.rect.centery - enemy.rect.centery)**2) <= enemy.brightness:
+                if not self.immortalTime['current']:
+                    self.get_damage(1)
+                    self.immortalTime['current'] = 1
         if self.immortalTime['current'] > 0:
             self.immortalTime['current'] += 1
             if self.immortalTime['current'] >= self.immortalTime['max']:
