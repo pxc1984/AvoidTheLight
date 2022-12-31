@@ -59,7 +59,7 @@ if __name__ == '__main__':
     pygame.display.set_caption('Avoid the Light')  # Название
     fps = CONSTANTS['FPS']  # задание фпс для первого кадра
     # Задание меню паузы
-    hint_font = pygame.font.SysFont("arialblack", 30)  # шрифт подсказок
+    hint_font = pygame.font.SysFont("arialblack", CONSTANTS['HEIGHT'] // 10)  # шрифт подсказок
     fps_font = pygame.font.SysFont("arialblack", 14)
     over_font = pygame.font.SysFont("arialblack", 50)
     clock = pygame.time.Clock()
