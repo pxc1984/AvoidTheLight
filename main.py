@@ -36,10 +36,25 @@ def main():
         # TODO: сделать отображение фразы чётко по центру с опорой на константы
         if hero.can_play:
             enemy.light.update(WIN, enemy, level)  # Light 6
-            draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], 150, 150, hint_font)  # Hint 5
-            draw_text(WIN, str(round(1000 / fps)), COLORS['text_color'], 600, 0, fps_font)  # FPS 5
+            draw_text(
+                WIN, 'press SPACE to pause',
+                COLORS['text_color'],
+                CONSTANTS['WIDTH'] * 0.234,
+                CONSTANTS['HEIGHT'] * 0.39, 
+                hint_font)  # Hint 5
+            draw_text(
+                WIN, 
+                str(round(1000 / fps)), 
+                COLORS['text_color'], 
+                CONSTANTS['WIDTH'] * 0.9375,
+                0, 
+                fps_font)  # FPS 5
             level.draw()  # Blocks 4
-            enemy.update(WIN, level, pygame.event.get(), paused)  # Enemy 3
+            enemy.update(
+                WIN, 
+                level, 
+                pygame.event.get(), 
+                paused)  # Enemy 3
             hero.update(WIN, level, enemy, pygame.event.get(), paused)  # Hero 2
         if not hero.can_play:
             game_over()  # Game Over 2
@@ -59,9 +74,9 @@ if __name__ == '__main__':
     pygame.display.set_caption('Avoid the Light')  # Название
     fps = CONSTANTS['FPS']  # задание фпс для первого кадра
     # Задание меню паузы
-    hint_font = pygame.font.SysFont("arialblack", 30)  # шрифт подсказок
-    fps_font = pygame.font.SysFont("arialblack", 14)
-    over_font = pygame.font.SysFont("arialblack", 50)
+    hint_font = pygame.font.SysFont("arialblack", int(CONSTANTS['HEIGHT'] / 12.8))  # шрифт подсказок
+    fps_font = pygame.font.SysFont("arialblack", int(CONSTANTS['HEIGHT'] / 27))  # шрифт фпс
+    over_font = pygame.font.SysFont("arialblack", int(CONSTANTS['HEIGHT'] / 7.68))  # шрифт доп. вещей
     clock = pygame.time.Clock()
     # Герой
     hero = Hero.Hero(0, 0)
