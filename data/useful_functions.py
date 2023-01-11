@@ -5,6 +5,8 @@ import pygame.font
 def load():
     colors = json.load(open('data/gfx/colors.json', 'r'))
     constants = json.load(open('data/constants.json', 'r'))
+    # it should be 16x9
+    constants['SCALE'] = constants['WIDTH'] // 16
     return colors, constants
 
 

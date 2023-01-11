@@ -85,9 +85,24 @@ if __name__ == '__main__':
     resume_img = pygame.image.load('data/gfx/button_resume.png')
     options_img = pygame.image.load('data/gfx/button_options.png')
     quit_img = pygame.image.load('data/gfx/button_quit.png')
-    button_resume = data.gfx.button.Button(225, 34, resume_img, 1)
-    button_options = data.gfx.button.Button(217, 150, options_img, 1)
-    button_quit = data.gfx.button.Button(256, 266, quit_img, 1)
+    button_resume = data.gfx.button.Button(
+        CONSTANTS['WIDTH'] * 0.17, 
+        CONSTANTS['HEIGHT'] * 0.08, 
+        resume_img, 
+        CONSTANTS['WIDTH'] * 0.67, 
+        CONSTANTS['HEIGHT'] * 0.21)
+    button_options = data.gfx.button.Button(
+        CONSTANTS['WIDTH'] * 0.17, 
+        CONSTANTS['HEIGHT'] * 0.29, 
+        options_img, 
+        CONSTANTS['WIDTH'] * 0.67, 
+        CONSTANTS['HEIGHT'] * 0.21)
+    button_quit = data.gfx.button.Button(
+        CONSTANTS['WIDTH'] * 0.17, 
+        CONSTANTS['HEIGHT'] * 0.58, 
+        quit_img, 
+        CONSTANTS['WIDTH'] * 0.67, 
+        CONSTANTS['HEIGHT'] * 0.21)
     paused = False
     run = True
     main()

@@ -20,7 +20,7 @@ class Enemy(pygame.sprite.Sprite):
             'right': False
         }
         self.animations = {
-            'standing': pygame.image.load('data/gfx/enemy.png')
+            'standing': pygame.transform.scale(pygame.image.load('data/gfx/enemy.png'), (CONSTANTS['SCALE'], CONSTANTS['SCALE']))
         }
         self.image = self.animations['standing']
         self.rect = self.image.get_rect(x=x * CONSTANTS['SCALE'], y=y * CONSTANTS['SCALE'])
@@ -28,8 +28,8 @@ class Enemy(pygame.sprite.Sprite):
         self.y = y
         self.brightness = 150
         self.move_speed = {  # сделать зависимость от кадров
-            'x': 1,
-            'y': 1
+            'x': round(CONSTANTS['WIDTH'] * 0.15 / CONSTANTS['FPS']),
+            'y': round(CONSTANTS['HEIGHT'] * 0.25 / CONSTANTS['FPS'])
         }
         self.current_speed = {
             'x': 0,

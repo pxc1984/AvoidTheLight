@@ -19,7 +19,7 @@ class Hero(pygame.sprite.Sprite):
     # заметка: при целочисленном делении это не работает(и при int() тоже)
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('data/gfx/main_character.png')
+        self.image = pygame.transform.scale(pygame.image.load('data/gfx/main_character.png'), (CONSTANTS['SCALE'], CONSTANTS['SCALE']))
         self.rect = self.image.get_rect(x=x * CONSTANTS['SCALE'], y=y * CONSTANTS['SCALE'])
         self.can_play = True
         self.isCollided = {
@@ -29,8 +29,8 @@ class Hero(pygame.sprite.Sprite):
             'right': False
         }
         self.move_speed = {
-            'x': 288 // CONSTANTS['FPS'],
-            'y': 288 // CONSTANTS['FPS']
+            'x': round(CONSTANTS['WIDTH'] * 0.3 / CONSTANTS['FPS']),
+            'y': round(CONSTANTS['HEIGHT'] * 0.5 / CONSTANTS['FPS'])
         }
         self.current_speed = {
             'x': 0,
