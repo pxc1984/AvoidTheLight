@@ -1,7 +1,6 @@
 import pygame
 import random
 from data.useful_functions import load
-import map as Level
 import math
 
 pygame.init()
@@ -20,16 +19,16 @@ class Enemy(pygame.sprite.Sprite):
             'right': False
         }
         self.animations = {
-            'standing': pygame.image.load('data/gfx/enemy.png')
+            'standing': pygame.transform.scale(pygame.image.load('data/gfx/enemy.png'), (CONSTANTS['SCALE'], CONSTANTS['SCALE']))
         }
         self.image = self.animations['standing']
         self.rect = self.image.get_rect(x=x * CONSTANTS['SCALE'], y=y * CONSTANTS['SCALE'])
         self.x = x
         self.y = y
-        self.brightness = 150
+        self.brightness = CONSTANTS['SCALE'] * 3
         self.move_speed = {  # сделать зависимость от кадров
-            'x': 1,
-            'y': 1
+            'x': round(CONSTANTS['WIDTH'] * 0.15 / CONSTANTS['FPS']),
+            'y': round(CONSTANTS['HEIGHT'] * 0.25 / CONSTANTS['FPS'])
         }
         self.current_speed = {
             'x': 0,
@@ -41,7 +40,7 @@ class Enemy(pygame.sprite.Sprite):
         }
         self.light = Light(self.rect.center[0], self.rect.center[1], self)
 
-    def update(self, surface: pygame.surface.Surface, level: Level.Map, events: pygame.event.get(), paused):
+    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, events: pygame.event.get(), paused):
         keys = pygame.key.get_pressed()
         if not paused:
             self.calculate_movement(keys)
@@ -51,8 +50,8 @@ class Enemy(pygame.sprite.Sprite):
             self.checkCollide_x(level)
         self.draw(surface)
 
-    def checkCollide_x(self, level: Level):
-        for tile in level.map:
+    def checkCollide_x(self, level: pygame.sprite.Group):
+        for tile in level:
             if pygame.sprite.collide_rect(self, tile):
                 if self.current_speed['x'] > 0:  # right
                     self.rect.right = tile.rect.left
@@ -65,8 +64,8 @@ class Enemy(pygame.sprite.Sprite):
             self.current_speed['x'] = 0
             self.rect.right = CONSTANTS['WIDTH']
 
-    def checkCollide_y(self, level: Level):
-        for tile in level.map:
+    def checkCollide_y(self, level: pygame.sprite.Group):
+        for tile in level:
             if pygame.sprite.collide_rect(self, tile):
                 if self.current_speed['y'] > 0:  # down
                     self.rect.bottom = tile.rect.top
@@ -130,7 +129,7 @@ class Light(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, (255, 255, 255), (enemy.brightness, enemy.brightness), enemy.brightness)
         self.rect = self.image.get_rect(x=x, y=y)
 
-    def update(self, surface: pygame.surface.Surface, enemy: Enemy, level: Level):
+    def update(self, surface: pygame.surface.Surface, enemy: Enemy, level: pygame.sprite.Group):
         self.draw(surface, enemy)
         self.redraw(surface, level, enemy)
 
@@ -138,9 +137,9 @@ class Light(pygame.sprite.Sprite):
         self.rect.center = enemy.rect.center
         surface.blit(self.image, self.rect)
 
-    def redraw(self, surface: pygame.surface.Surface, level: Level, enemy: Enemy):
+    def redraw(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy: Enemy):
         collided_tiles = []
-        for tile in level.map:
+        for tile in level:
             if pygame.sprite.collide_rect(self, tile):
                 collided_points = []
                 if self.rect.collidepoint(tile.rect.topright):
