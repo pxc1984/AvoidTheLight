@@ -9,4 +9,4 @@ COLORS, CONSTANTS = load()
 class PowerUp(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('data/gfx/powerup.png')
+        self.image = pygame.transform.scale(pygame.image.load('data/gfx/powerup.png'), (CONSTANTS['SCALE'], CONSTANTS['SCALE']))

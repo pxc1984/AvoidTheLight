@@ -1,6 +1,5 @@
 import pygame
 from data.useful_functions import load
-from map import Map as Level
 import Enemy
 import math
 
@@ -15,8 +14,6 @@ WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
 class Hero(pygame.sprite.Sprite):
     MAX_HP = 10
 
-    # TODO: нашел интересный баг, при движении влево вверх скорость в 1.5 раза больше чем при движении вправо вниз
-    # заметка: при целочисленном делении это не работает(и при int() тоже)
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.transform.scale(pygame.image.load('data/gfx/main_character.png'), (CONSTANTS['SCALE'], CONSTANTS['SCALE']))
@@ -42,7 +39,7 @@ class Hero(pygame.sprite.Sprite):
             'current': 0
         }
 
-    def update(self, surface: pygame.surface.Surface, level, enemy, events: pygame.event.get(), paused):
+    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy, events: pygame.event.get(), paused):
         keys = pygame.key.get_pressed()
         if not paused and self.can_play:
             self.check_controls(keys, events)
@@ -72,8 +69,8 @@ class Hero(pygame.sprite.Sprite):
         if not keys[pygame.K_w] and not keys[pygame.K_s]:
             self.current_speed['y'] = 0
 
-    def checkCollide_x(self, level: Level):
-        for tile in level.map:
+    def checkCollide_x(self, level: pygame.sprite.Group):
+        for tile in level:
             if pygame.sprite.collide_rect(self, tile):
                 if self.current_speed['x'] > 0:  # right
                     self.rect.right = tile.rect.left
@@ -86,8 +83,8 @@ class Hero(pygame.sprite.Sprite):
             self.current_speed['x'] = 0
             self.rect.right = CONSTANTS['WIDTH']
 
-    def checkCollide_y(self, level: Level):
-        for tile in level.map:
+    def checkCollide_y(self, level: pygame.sprite.Group):
+        for tile in level:
             if pygame.sprite.collide_rect(self, tile):
                 if self.current_speed['y'] > 0:  # down
                     self.rect.bottom = tile.rect.top
@@ -100,12 +97,13 @@ class Hero(pygame.sprite.Sprite):
             self.current_speed['y'] = 0
             self.rect.bottom = CONSTANTS['HEIGHT']
 
-    def check_damage(self, enemy, level: Level):
-        for tile in level.map:
-            if math.sqrt((self.rect.centerx - enemy.rect.centerx)**2 + (self.rect.centery - enemy.rect.centery)**2) <= enemy.brightness:
-                if not self.immortalTime['current']:
-                    self.get_damage(1)
-                    self.immortalTime['current'] = 1
+    def check_damage(self, enemy_group: pygame.sprite.Group, level: pygame.sprite.Group):
+        for tile in level:  # TODO: not optimal check for kill, better hadn't done it. It works optimal only with one enemy, so I will use it only with one enemy
+            for enemy in enemy_group.sprites():
+                if math.sqrt((self.rect.centerx - enemy.rect.centerx)**2 + (self.rect.centery - enemy.rect.centery)**2) <= enemy.brightness:
+                    if not self.immortalTime['current']:
+                        self.get_damage(1)
+                        self.immortalTime['current'] = 1
         if self.immortalTime['current'] > 0:
             self.immortalTime['current'] += 1
             if self.immortalTime['current'] >= self.immortalTime['max']:
@@ -118,5 +116,6 @@ class Hero(pygame.sprite.Sprite):
             self.death()
 
     def death(self):
+        global can_play
         print('death')
         self.can_play = False

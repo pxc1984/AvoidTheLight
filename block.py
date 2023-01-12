@@ -14,5 +14,5 @@ class Block(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(pygame.image.load('data/gfx/tile.png'), (CONSTANTS['SCALE'], CONSTANTS['SCALE']))
         self.rect = self.image.get_rect(x=x * CONSTANTS['SCALE'], y=y * CONSTANTS['SCALE'])
 
-    def show(self):
+    def update(self):
         WIN.blit(self.image, self.rect)
