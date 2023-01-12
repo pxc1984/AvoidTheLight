@@ -39,7 +39,7 @@ class Hero(pygame.sprite.Sprite):
             'current': 0
         }
 
-    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy, events: pygame.event.get(), paused):
+    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy, powerups: pygame.sprite.Group, events: pygame.event.get(), paused):
         keys = pygame.key.get_pressed()
         if not paused and self.can_play:
             self.check_controls(keys, events)
@@ -48,6 +48,7 @@ class Hero(pygame.sprite.Sprite):
             self.rect.x += self.current_speed['x']
             self.checkCollide_x(level)
             self.check_damage(enemy, level)
+            self.check_powerup(powerups)
         self.draw(surface)
         return round(self.current_speed['x'], 1), round(self.current_speed['y'], 1)
 
@@ -108,6 +109,12 @@ class Hero(pygame.sprite.Sprite):
             self.immortalTime['current'] += 1
             if self.immortalTime['current'] >= self.immortalTime['max']:
                 self.immortalTime['current'] = 0
+    
+    def check_powerup(self, powerups: pygame.sprite.Group):
+        if self.hp != 10:
+            dict = pygame.sprite.groupcollide(pygame.sprite.GroupSingle(self), powerups, False, True)
+            if dict != {}:
+                self.hp = 10
 
     def get_damage(self, damage):
         self.hp -= damage
