@@ -101,12 +101,13 @@ def main():
                 0, 
                 fps_font)  # FPS 5
             Tiles.update()  # Blocks 4
+            Powerups.update() # Powerups
             Enemies.update(
                 WIN, 
                 Tiles, 
                 pygame.event.get(), 
                 paused)  # Enemy 3
-            Heroes.update(WIN, Tiles, Enemies, pygame.event.get(), paused)  # Hero 2
+            Heroes.update(WIN, Tiles, Enemies, Powerups, pygame.event.get(), paused)  # Hero 2
         if not Heroes.sprites()[0].can_play:
             game_over()  # Game Over 2
         draw_pause() if paused else None  # Pause 1
