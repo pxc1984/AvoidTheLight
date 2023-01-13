@@ -1,7 +1,7 @@
 {
   "WIDTH": 640,
   "HEIGHT": 360,
-  "FPS": 144,
+  "FPS": 60,
   "SCALE": 64,
   "MAX_HEALTH": 10,
   "IMMORTAL": 0.3

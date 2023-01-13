@@ -79,43 +79,43 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.bottom = CONSTANTS['HEIGHT']
 
     def calculate_movement(self, keys):
-        if self.path['active'] == 64:  # нету пути
-            self.path['active'] = 0
-            self.path['direction'] = random.randint(0, 9)  # direction where to move UNUSED
-            self.path['active'] = True
-            if self.path['direction'] == 0:  # 0 - none
-                self.current_speed['x'], self.current_speed['y'] = 0, 0
-            if self.path['direction'] == 1:  # 1 - up left
-                self.current_speed['x'], self.current_speed['y'] = 1, -1
-            if self.path['direction'] == 2:  # 2 - up
-                self.current_speed['x'], self.current_speed['y'] = 0, -1
-            if self.path['direction'] == 3:  # 3 - up right
-                self.current_speed['x'], self.current_speed['y'] = 1, -1
-            if self.path['direction'] == 4:  # 4 - right
-                self.current_speed['x'], self.current_speed['y'] = 1, 0
-            if self.path['direction'] == 5:  # 5 - down right
-                self.current_speed['x'], self.current_speed['y'] = 1, 1
-            if self.path['direction'] == 6:  # 6 - down
-                self.current_speed['x'], self.current_speed['y'] = 0, 1
-            if self.path['direction'] == 7:  # 7 - down left
-                self.current_speed['x'], self.current_speed['y'] = -1, 1
-            if self.path['direction'] == 8:  # 8 - left
-                self.current_speed['x'], self.current_speed['y'] = -1, 0
-        elif self.path['active'] < 64:  # есть путь, проверка выполнился ли путь
-            self.path['active'] += 1
+        # if self.path['active'] == 64:  # нету пути
+        #     self.path['active'] = 0
+        #     self.path['direction'] = random.randint(0, 9)  # direction where to move UNUSED
+        #     self.path['active'] = True
+        #     if self.path['direction'] == 0:  # 0 - none
+        #         self.current_speed['x'], self.current_speed['y'] = 0, 0
+        #     if self.path['direction'] == 1:  # 1 - up left
+        #         self.current_speed['x'], self.current_speed['y'] = 1, -1
+        #     if self.path['direction'] == 2:  # 2 - up
+        #         self.current_speed['x'], self.current_speed['y'] = 0, -1
+        #     if self.path['direction'] == 3:  # 3 - up right
+        #         self.current_speed['x'], self.current_speed['y'] = 1, -1
+        #     if self.path['direction'] == 4:  # 4 - right
+        #         self.current_speed['x'], self.current_speed['y'] = 1, 0
+        #     if self.path['direction'] == 5:  # 5 - down right
+        #         self.current_speed['x'], self.current_speed['y'] = 1, 1
+        #     if self.path['direction'] == 6:  # 6 - down
+        #         self.current_speed['x'], self.current_speed['y'] = 0, 1
+        #     if self.path['direction'] == 7:  # 7 - down left
+        #         self.current_speed['x'], self.current_speed['y'] = -1, 1
+        #     if self.path['direction'] == 8:  # 8 - left
+        #         self.current_speed['x'], self.current_speed['y'] = -1, 0
+        # elif self.path['active'] < 64:  # есть путь, проверка выполнился ли путь
+        #     self.path['active'] += 1
 
-        # if keys[pygame.K_LEFT]:
-        #     self.current_speed['x'] = self.move_speed['x'] * -1  # left
-        # if keys[pygame.K_RIGHT]:
-        #     self.current_speed['x'] = self.move_speed['x']  # right
-        # if not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
-        #     self.current_speed['x'] = 0
-        # if keys[pygame.K_UP]:
-        #     self.current_speed['y'] = self.move_speed['y'] * -1  # up
-        # if keys[pygame.K_DOWN]:
-        #     self.current_speed['y'] = self.move_speed['y']  # down
-        # if not keys[pygame.K_UP] and not keys[pygame.K_DOWN]:
-        #     self.current_speed['y'] = 0
+        if keys[pygame.K_LEFT]:
+            self.current_speed['x'] = self.move_speed['x'] * -1  # left
+        if keys[pygame.K_RIGHT]:
+            self.current_speed['x'] = self.move_speed['x']  # right
+        if not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
+            self.current_speed['x'] = 0
+        if keys[pygame.K_UP]:
+            self.current_speed['y'] = self.move_speed['y'] * -1  # up
+        if keys[pygame.K_DOWN]:
+            self.current_speed['y'] = self.move_speed['y']  # down
+        if not keys[pygame.K_UP] and not keys[pygame.K_DOWN]:
+            self.current_speed['y'] = 0
 
     def draw(self, surface: pygame.surface.Surface):
         surface.blit(self.image, self.rect)
@@ -155,20 +155,73 @@ class Light(pygame.sprite.Sprite):
         for points in collided_tiles:
             exit_value = sorted(points, key=lambda x: round(math.atan2(x[1] - self.rect.centery, x[0] - self.rect.centerx), 4))
             collided_points.append((exit_value[0], exit_value[-1]))  # Нужные точки уже отсортированные
+            pygame.draw.polygon(surface, COLORS['background_color'], (exit_value[0], exit_value[-1],
+                                                                      self.count_iterable(exit_value[-1]),
+                                                                      self.count_iterable(exit_value[0])))
+            pygame.draw.circle(surface, (255, 0, 0), (exit_value[0]), 5.0)
+            pygame.draw.circle(surface, (255, 0, 0), (exit_value[-1]), 5.0)
+            pygame.draw.circle(surface, (255, 0, 0), self.count_iterable(exit_value[-1]), 5.0)
+            pygame.draw.circle(surface, (255, 0, 0), self.count_iterable(exit_value[0]), 5.0)
         
 
     def count_iterable(self, value):
         # interception_with_y, interception_with_x
+
+        # try:
+        #     inter_with_x = (-self.rect.centery*(value[0] - self.rect.centerx)/(value[1] - self.rect.centery)) + self.rect.centerx
+        # except ZeroDivisionError:
+        #     return [0, self.rect.centery]
+        # try:
+        #     inter_with_y = (-self.rect.centerx*(value[1] - self.rect.centery))/(value[1] - self.rect.centerx) + self.rect.centery
+        # except ZeroDivisionError:
+        #     return [self.rect.centerx, 0]
+        # # Я нашел ошибку в свете, он ищет ближайшее расстояние, а надо следующее
+        # if math.sqrt((self.rect.centerx - inter_with_x)**2 + (self.rect.centery)**2) <= math.sqrt((self.rect.centerx)**2 + (self.rect.centery - inter_with_y)**2):
+        #     return [inter_with_x, 0]
+        # else:
+        #     return [0, inter_with_y]
+
+        # Наша прямоя имеет вид 
+        # (x - self.rect.centerx)/(value[0] - self.rect.centerx) = (y - self.rect.centery)/(value[1] - self.rect.centery)
+        # Надо найти точки пересечения ее с прямыми {
+        # x = 0
+        # x = CONSTANTS['WIDTH']
+        # y = 0
+        # y = CONSTANTS['HEIGHT']
+        # }
+        # k = (value[0] - self.rect.centerx)/(x - self.rect.centerx)
+
+        x1, y1, x2, y2 = self.rect.centerx, self.rect.centery, value[0], value[1]
+        
         try:
-            inter_with_x = min((-self.rect.centery*(value[0] - self.rect.centerx)/(value[1] - self.rect.centery)) + self.rect.centerx,
-                               (-self.rect.centery*(value[0] - self.rect.centerx)/(value[1]-self.rect.centery)) + self.rect.centerx)
+            x0 = -y1*(y2-y1)/(x2-x1)
+            xh = (CONSTANTS['HEIGHT']-y1)*(x2-x1)/(y2-y1)
+            if (x2 - self.rect.centerx)/(x0 - self.rect.centerx) >= 0:
+                xf = (x0, 0)
+            else:
+                xf = (xh, CONSTANTS['HEIGHT'])
         except ZeroDivisionError:
-            return [0, self.rect.centery]
+            xf = (x1, 0)
+        
         try:
-            inter_with_y = (-self.rect.centerx*(value[1] - self.rect.centery))/(value[1] - self.rect.centerx) + self.rect.centery
+            y0 = -x1*(x2-x1)/(y2-y1)
+            yw = (CONSTANTS['WIDTH']-x1)*(y2-y1)/(x2-x1)
+            if (x2 - self.rect.centery)/(y0 - self.rect.centery) >= 0:
+                yf = (0, y0)
+            else:
+                yf = (CONSTANTS['WIDTH'], yw)
         except ZeroDivisionError:
-            return [self.rect.centerx, 0]
-        if math.sqrt((self.rect.centerx - inter_with_x)**2 + (self.rect.centery)**2) <= math.sqrt((self.rect.centerx)**2 + (self.rect.centery - inter_with_y)**2):
-            return [inter_with_x, 0]
+            yf = (0, y1)
+        
+        # if math.sqrt((self.rect.centerx - xf[0])**2 + (self.rect.centery - xf[1])**2) <= math.sqrt((self.rect.centerx - yf[0])**2 + (self.rect.centery - yf[1])**2):
+        #     return xf
+        # else:
+        #     return yf
+        
+        if self.rect.centerx - xf[0] + self.rect.centery - xf[1] >= self.rect.centerx - yf[0] + self.rect.centery - yf[1]:
+            return xf
         else:
-            return [0, inter_with_y]
+            return yf
+        
+
+
