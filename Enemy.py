@@ -147,21 +147,27 @@ class Light(pygame.sprite.Sprite):
                 if self.rect.collidepoint(tile.rect.topleft):
                     collided_points.append(tile.rect.topleft)
                 if self.rect.collidepoint(tile.rect.bottomright):
-                    collided_points.append(tile.rect.topright)
+                    collided_points.append(tile.rect.bottomright)
                 if self.rect.collidepoint(tile.rect.bottomleft):
                     collided_points.append(tile.rect.bottomleft)
                 collided_tiles.append(collided_points)
         collided_points = []
         for points in collided_tiles:
             exit_value = sorted(points, key=lambda x: round(math.atan2(x[1] - self.rect.centery, x[0] - self.rect.centerx), 4))
-            collided_points.append((exit_value[0], exit_value[-1]))  # Нужные точки уже отсортированные
-            pygame.draw.polygon(surface, COLORS['background_color'], (exit_value[0], exit_value[-1],
-                                                                      self.count_iterable(exit_value[-1]),
-                                                                      self.count_iterable(exit_value[0])))
-            pygame.draw.circle(surface, (255, 0, 0), (exit_value[0]), 5.0)
-            pygame.draw.circle(surface, (255, 0, 0), (exit_value[-1]), 5.0)
-            pygame.draw.circle(surface, (255, 0, 0), self.count_iterable(exit_value[-1]), 5.0)
-            pygame.draw.circle(surface, (255, 0, 0), self.count_iterable(exit_value[0]), 5.0)
+            # collided_points.append((exit_value[0], exit_value[-1]))  # Нужные точки уже отсортированные
+            pygame.draw.polygon(
+                surface, 
+                COLORS['background_color'], 
+                (exit_value[-1], 
+                exit_value[0], 
+                self.count_iterable(exit_value[0]), 
+                self.count_iterable(exit_value[-1])), 
+                # width = 10,
+                )
+            # pygame.draw.circle(surface, (255, 0, 0), (exit_value[0]), 5.0)
+            # pygame.draw.circle(surface, (0, 255, 0), (exit_value[-1]), 5.0)
+            # pygame.draw.circle(surface, (255, 0, 0), self.count_iterable(exit_value[-1]), 5.0)
+            # pygame.draw.circle(surface, (0, 255, 0), self.count_iterable(exit_value[0]), 5.0)
         
 
     def count_iterable(self, value):
@@ -194,8 +200,8 @@ class Light(pygame.sprite.Sprite):
         x1, y1, x2, y2 = self.rect.centerx, self.rect.centery, value[0], value[1]
         
         try:
-            x0 = -y1*(y2-y1)/(x2-x1)
-            xh = (CONSTANTS['HEIGHT']-y1)*(x2-x1)/(y2-y1)
+            x0 = -y1*(x2-x1)/(y2-y1) + x1 # подставляю y = 0
+            xh = (CONSTANTS['HEIGHT']-y1)*(x2-x1)/(y2-y1) + x1  # подставляю y = height
             if (x2 - self.rect.centerx)/(x0 - self.rect.centerx) >= 0:
                 xf = (x0, 0)
             else:
@@ -204,9 +210,9 @@ class Light(pygame.sprite.Sprite):
             xf = (x1, 0)
         
         try:
-            y0 = -x1*(x2-x1)/(y2-y1)
-            yw = (CONSTANTS['WIDTH']-x1)*(y2-y1)/(x2-x1)
-            if (x2 - self.rect.centery)/(y0 - self.rect.centery) >= 0:
+            y0 = -x1*(y2-y1)/(x2-x1) + y1  # подставляю x = 0
+            yw = (CONSTANTS['WIDTH']-x1)*(y2-y1)/(x2-x1) + y1  # подставляю x = width
+            if (y2 - y1)/(y0 - y1) >= 0:
                 yf = (0, y0)
             else:
                 yf = (CONSTANTS['WIDTH'], yw)
