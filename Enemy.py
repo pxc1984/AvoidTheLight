@@ -101,7 +101,7 @@ class Enemy(pygame.sprite.Sprite):
         #         self.current_speed['x'], self.current_speed['y'] = -1, 1
         #     if self.path['direction'] == 8:  # 8 - left
         #         self.current_speed['x'], self.current_speed['y'] = -1, 0
-        # elif self.path['active'] < 64:  # есть путь, проверка выполнился ли путь
+        # elif self.path['active'] < CONSTANTS['SCALE']:  # есть путь, проверка выполнился ли путь
         #     self.path['active'] += 1
 
         if keys[pygame.K_LEFT]:

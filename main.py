@@ -8,6 +8,10 @@ import random
 import block
 
 
+import cProfile
+import pstats
+
+
 # Originally, map was made to play on 16x9 scale
 # but not every solution can be used to play
 # Tested solutions are those, where width / height is ~1.78
@@ -112,6 +116,7 @@ def main():
             game_over()  # Game Over 2
         draw_pause() if paused else None  # Pause 1
         pygame.display.flip()
+
         fps = clock.tick(CONSTANTS['FPS'])
     pygame.quit()
 
@@ -166,4 +171,11 @@ if __name__ == '__main__':
     
     paused = False
     run = True
-    main()
+
+    with cProfile.Profile() as pr:
+        main()
+
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.print_stats()
+    stats.dump_stats(filename='needs_prof.prof')
