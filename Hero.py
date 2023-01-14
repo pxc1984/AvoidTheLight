@@ -99,12 +99,12 @@ class Hero(pygame.sprite.Sprite):
             self.rect.bottom = CONSTANTS['HEIGHT']
 
     def check_damage(self, enemy_group: pygame.sprite.Group, level: pygame.sprite.Group):
-        for tile in level:  # TODO: not optimal check for kill, better hadn't done it. It works optimal only with one enemy, so I will use it only with one enemy
-            for enemy in enemy_group.sprites():
-                if math.sqrt((self.rect.centerx - enemy.rect.centerx)**2 + (self.rect.centery - enemy.rect.centery)**2) <= enemy.brightness:
-                    if not self.immortalTime['current']:
-                        self.get_damage(1)
-                        self.immortalTime['current'] = 1
+        # TODO: not optimal check for kill, better hadn't done it. It works optimal only with one enemy, so I will use it only with one enemy
+        for enemy in enemy_group.sprites():
+            if pygame.sprite.collide_mask(self, enemy.light):
+                if not self.immortalTime['current']:
+                    self.get_damage(1)
+                    self.immortalTime['current'] = 1
         if self.immortalTime['current'] > 0:
             self.immortalTime['current'] += 1
             if self.immortalTime['current'] >= self.immortalTime['max']:
