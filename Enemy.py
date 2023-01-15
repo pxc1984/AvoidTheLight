@@ -204,13 +204,14 @@ class Light(pygame.sprite.Sprite):
         self.mask_image.fill((0, 0, 0))
         if len(exit_values) == 0:
             pygame.draw.circle(self.mask_image, (255, 255, 255), (enemy.brightness, enemy.brightness), enemy.brightness)
-        elif len(exit_values) == 1:
-            pygame.draw.arc(self.mask_image, (255, 255, 255), (0, 0, enemy.brightness * 2, enemy.brightness * 2), exit_values[0][0][1], exit_values[0][1][1])
-            pygame.draw.polygon(self.mask_image, (255, 255, 255), ())
         else:
-            for i in range(len(exit_values) - 1):
-                pygame.draw.arc(self.mask_image, (255, 255, 255), (0, 0, enemy.brightness * 2, enemy.brightness * 2), exit_values[i][1][1], exit_values[i + 1][0][1])
-        pygame.draw.arc(self.mask_image, (255, 255, 255), (0, 0, enemy.brightness * 2, enemy.brightness * 2), exit_values[-1][1][1], exit_values[0][0][1])
+            if len(exit_values) == 1:
+                pygame.draw.arc(self.mask_image, (255, 255, 255), (0, 0, enemy.brightness * 2, enemy.brightness * 2), exit_values[0][0][1], exit_values[0][1][1])
+                pygame.draw.polygon(self.mask_image, (255, 255, 255), ())
+            else:
+                for i in range(len(exit_values) - 1):
+                    pygame.draw.arc(self.mask_image, (255, 255, 255), (0, 0, enemy.brightness * 2, enemy.brightness * 2), exit_values[i][1][1], exit_values[i + 1][0][1])
+            pygame.draw.arc(self.mask_image, (255, 255, 255), (0, 0, enemy.brightness * 2, enemy.brightness * 2), exit_values[-1][1][1], exit_values[0][0][1])
         self.mask_image.set_colorkey((0, 0, 0))
         self.mask = pygame.mask.from_surface(self.mask_image)
 
