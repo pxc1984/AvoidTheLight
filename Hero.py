@@ -40,7 +40,11 @@ class Hero(pygame.sprite.Sprite):
             'current': 0
         }
 
-    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy, powerups: pygame.sprite.Group, events: pygame.event.get(), keys: pygame.key.get_pressed(), paused):
+    def update(self, fps, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy, powerups: pygame.sprite.Group, events: pygame.event.get(), keys: pygame.key.get_pressed(), paused):
+        self.move_speed = {
+            'x': round(CONSTANTS['WIDTH'] * 0.3 / fps),
+            'y': round(CONSTANTS['HEIGHT'] * 0.3 / fps)
+        }
         if not paused and self.can_play:
             self.check_controls(keys, events)
             self.rect.y += self.current_speed['y']
