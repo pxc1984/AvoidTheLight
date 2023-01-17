@@ -1,6 +1,6 @@
 {
-  "WIDTH": 640,
-  "HEIGHT": 360,
+  "WIDTH": 1920,
+  "HEIGHT": 1080,
   "FPS": 144,
   "SCALE": 64,
   "MAX_HEALTH": 10,
