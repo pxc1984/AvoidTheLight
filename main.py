@@ -6,6 +6,7 @@ import powerup
 import Hero
 import random
 import block
+import data.gfx.heart
 
 # I had used this to find, which parts are freezing
 import cProfile
@@ -50,7 +51,6 @@ maps = [  # map is 16x9
 def generate_map(temp):
     map = maps[temp]
     for row, line in enumerate(map):
-        print(row, line)
         for column, pos in enumerate(line):
             if pos == '@':  # Hero
                 Heroes.add(Hero.Hero(column, row))
@@ -66,10 +66,10 @@ def draw_pause():
     This function draws pause menu over the screen
     '''
     global paused, run
-    if button_resume.draw(WIN):
+    if button_resume.draw(screen):
         paused = False
-    button_options.draw(WIN)
-    if button_quit.draw(WIN):
+    button_options.draw(screen)
+    if button_quit.draw(screen):
         run = False
 
 
@@ -88,18 +88,25 @@ def main():
                 if event.key == pygame.K_SPACE:
                     paused = not paused
 
-        WIN.fill(COLORS['background_color'])  # фон
+        screen.fill(COLORS['background_color'])  # фон
         if Heroes.sprites()[0].can_play:
-            Enemies.sprites()[0].light.update(WIN, Enemies.sprites()[0], Tiles)  # Light 6
-            draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], CONSTANTS['WIDTH'] * 0.234, CONSTANTS['HEIGHT'] * 0.39, hint_font)  # Hint 5
-        draw_text(WIN, str(round(1000 / fps)), COLORS['text_color'], CONSTANTS['WIDTH'] * 0.9375, 0, fps_font)  # FPS 5
+            Enemies.sprites()[0].light.update(screen, Enemies.sprites()[0], Tiles)  # Light 6
+            draw_text(screen, 'press SPACE to pause', COLORS['text_color'], CONSTANTS['WIDTH'] * 0.234, CONSTANTS['HEIGHT'] * 0.39, hint_font)  # Hint 5
+        draw_text(screen, str(round(1000 / fps)), COLORS['text_color'], CONSTANTS['WIDTH'] * 0.9375, 0, fps_font)  # FPS 5
         if Heroes.sprites()[0].can_play:
             Tiles.update()  # Blocks 4
             Powerups.update() # Powerups
-            Enemies.update(WIN, Tiles, events, keys, paused)  # Enemy 3
-            Heroes.update(WIN, Tiles, Enemies, Powerups, events, keys, paused)  # Hero 2
+            Enemies.update(screen, Tiles, events, keys, paused)  # Enemy 3
+            Heroes.update(screen, Tiles, Enemies, Powerups, events, keys, paused)  # Hero 2
         if not Heroes.sprites()[0].can_play:
-            game_over()  # Game Over 2
+            for i in range(1, 4):
+                game_over()  # Game Over 2
+                Heroes.sprites()[0].kill(screen, i)
+                pygame.display.flip()
+                clock.tick(1)
+                screen.fill(COLORS['background_color'])
+            run = False
+        update_health(screen, Heroes)
         draw_pause() if paused else None  # Pause 1
         pygame.display.flip()
 
@@ -112,12 +119,33 @@ def game_over():
     this function shows the GAME OVER menu
     animations on game over must be placed here
     '''
-    draw_text(WIN, 'GAME OVER', COLORS['game_over'], CONSTANTS['WIDTH'] * 0.23, CONSTANTS['HEIGHT'] * 0.39, over_font)
+    draw_text(screen, 'GAME OVER', COLORS['game_over'], CONSTANTS['WIDTH'] * 0.23, CONSTANTS['HEIGHT'] * 0.39, over_font)
+
+
+def update_health(screen, Heroes: pygame.sprite.Group()):
+    hp = Heroes.sprites()[0].hp
+    hp_list = []
+    while hp > 2:
+        hp_list.append(2)
+        hp -= 2
+    if hp % 2 == 1:
+        hp_list.append(1)
+    elif hp == 0:
+        hp_list.append(0)
+    elif hp == 2:
+        hp_list.append(2)
+    while len(hp_list) < 5:
+        hp_list.append(0)
+    for n, i in enumerate(hp_list):
+        Hearts.sprites()[n].set(i)
+    
+    print(hp_list)
+    Hearts.update(screen)
 
 
 if __name__ == '__main__':
     COLORS, CONSTANTS = load()  # Словари с константами
-    WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))  # Основное окно
+    screen = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))  # Основное окно
     pygame.display.set_caption('Avoid the Light')  # Название
     fps = CONSTANTS['FPS']  # задание фпс для первого кадра
 
@@ -132,6 +160,8 @@ if __name__ == '__main__':
     Heroes = pygame.sprite.Group()
     Enemies = pygame.sprite.Group()
     Powerups = pygame.sprite.Group()
+
+    Hearts = pygame.sprite.Group(*[data.gfx.heart.Heart(i * CONSTANTS['SCALE'] // 2, (CONSTANTS['HEIGHT'] - CONSTANTS['SCALE'] // 2), 2) for i in range(5)])
     generate_map(current_map)
 
     # Задание кнопок паузы
@@ -167,5 +197,5 @@ if __name__ == '__main__':
 
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
-    stats.print_stats()
+    # stats.print_stats()
     stats.dump_stats(filename='needs_prof.prof')

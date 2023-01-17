@@ -126,7 +126,7 @@ class Light(pygame.sprite.Sprite):
         self.image = pygame.surface.Surface((enemy.brightness*2, enemy.brightness*2))
         self.image.fill(COLORS['background_color'])
         for i in range(1, len(COLORS['saturation_colors']) + 1):
-            pygame.draw.circle(self.image, COLORS['saturation_colors'][-i], (enemy.brightness, enemy.brightness), enemy.brightness - i * 20)
+            pygame.draw.circle(self.image, COLORS['saturation_colors'][-i], (enemy.brightness, enemy.brightness), enemy.brightness - i * CONSTANTS['HEIGHT'] / 54)
         self.rect = self.image.get_rect(x=x, y=y)
         # self.mask_image = self.image
         # self.mask_image.set_colorkey(COLORS['background_color'])

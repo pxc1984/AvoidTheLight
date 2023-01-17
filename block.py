@@ -5,7 +5,7 @@ pygame.init()
 
 COLORS, CONSTANTS = load()
 
-WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
+screen = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
 
 
 class Block(pygame.sprite.Sprite):
@@ -15,4 +15,4 @@ class Block(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(x=x * CONSTANTS['SCALE'], y=y * CONSTANTS['SCALE'])
 
     def update(self):
-        WIN.blit(self.image, self.rect)
+        screen.blit(self.image, self.rect)

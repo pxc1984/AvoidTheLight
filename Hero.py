@@ -9,7 +9,7 @@ pygame.mixer.init()
 COLORS, CONSTANTS = load()
 
 if __name__ == '__main__':
-    WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
+    screen = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
 
 
 class Hero(pygame.sprite.Sprite):
@@ -38,6 +38,11 @@ class Hero(pygame.sprite.Sprite):
         self.immortalTime = {
             'max': CONSTANTS['IMMORTAL'] * CONSTANTS['FPS'],
             'current': 0
+        }
+        self.kill_animation = {
+            '1': pygame.transform.scale(pygame.image.load('data/gfx/death1.png'), (CONSTANTS['SCALE'], CONSTANTS['SCALE'])),
+            '2': pygame.transform.scale(pygame.image.load('data/gfx/death2.png'), (CONSTANTS['SCALE'], CONSTANTS['SCALE'])),
+            '3': pygame.transform.scale(pygame.image.load('data/gfx/death3.png'), (CONSTANTS['SCALE'], CONSTANTS['SCALE'])),
         }
 
     def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy, powerups: pygame.sprite.Group, events: pygame.event.get(), keys: pygame.key.get_pressed(), paused):
@@ -124,5 +129,8 @@ class Hero(pygame.sprite.Sprite):
 
     def death(self):
         global can_play
-        print('death')
         self.can_play = False
+    
+    def kill(self, screen: pygame.surface.Surface, i: int):
+        self.image = self.kill_animation[str(i)]
+        screen.blit(self.image, self.rect)
