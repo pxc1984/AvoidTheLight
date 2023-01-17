@@ -7,7 +7,6 @@ import Hero
 import random
 import block
 
-
 import cProfile
 import pstats
 

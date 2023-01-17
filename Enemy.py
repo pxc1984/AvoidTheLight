@@ -25,7 +25,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(x=x * CONSTANTS['SCALE'], y=y * CONSTANTS['SCALE'])
         self.x = x
         self.y = y
-        self.brightness = CONSTANTS['SCALE'] * 9    
+        self.brightness = CONSTANTS['SCALE'] * 3    
         self.move_speed = {  # сделать зависимость от кадров
             'x': round(CONSTANTS['WIDTH'] * 0.15 / CONSTANTS['FPS']),
             'y': round(CONSTANTS['HEIGHT'] * 0.25 / CONSTANTS['FPS'])
@@ -126,7 +126,8 @@ class Light(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.surface.Surface((enemy.brightness*2, enemy.brightness*2))
         self.image.fill(COLORS['background_color'])
-        pygame.draw.circle(self.image, (255, 255, 255), (enemy.brightness, enemy.brightness), enemy.brightness)
+        for i in range(1, len(COLORS['saturation_colors']) + 1):
+            pygame.draw.circle(self.image, COLORS['saturation_colors'][-i], (enemy.brightness, enemy.brightness), enemy.brightness - i * 10)
         self.rect = self.image.get_rect(x=x, y=y)
 
     def update(self, surface: pygame.surface.Surface, enemy: Enemy, level: pygame.sprite.Group):
