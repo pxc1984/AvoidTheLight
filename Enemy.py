@@ -40,8 +40,7 @@ class Enemy(pygame.sprite.Sprite):
         }
         self.light = Light(self.rect.center[0], self.rect.center[1], self)
 
-    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, events: pygame.event.get(), paused):
-        keys = pygame.key.get_pressed()
+    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, events: pygame.event.get(), keys: pygame.key.get_pressed(), paused):
         if not paused:
             self.calculate_movement(keys)
             self.rect.y += self.current_speed['y']
@@ -127,18 +126,27 @@ class Light(pygame.sprite.Sprite):
         self.image = pygame.surface.Surface((enemy.brightness*2, enemy.brightness*2))
         self.image.fill(COLORS['background_color'])
         for i in range(1, len(COLORS['saturation_colors']) + 1):
-            pygame.draw.circle(self.image, COLORS['saturation_colors'][-i], (enemy.brightness, enemy.brightness), enemy.brightness - i * 10)
+            pygame.draw.circle(self.image, COLORS['saturation_colors'][-i], (enemy.brightness, enemy.brightness), enemy.brightness - i * 20)
         self.rect = self.image.get_rect(x=x, y=y)
+        # self.mask_image = self.image
+        # self.mask_image.set_colorkey(COLORS['background_color'])
+        # self.mask = pygame.mask.from_surface(self.mask_image)
 
     def update(self, surface: pygame.surface.Surface, enemy: Enemy, level: pygame.sprite.Group):
         self.draw(surface, enemy)
         self.redraw(surface, level, enemy)
 
     def draw(self, surface, enemy: Enemy):
+        '''
+        draws basic light
+        '''
         self.rect.center = enemy.rect.center
         surface.blit(self.image, self.rect)
 
     def redraw(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy: Enemy):
+        '''
+        draws shades
+        '''
         collided_tiles = []
         for tile in level:
             if pygame.sprite.collide_rect(self, tile):
@@ -156,38 +164,23 @@ class Light(pygame.sprite.Sprite):
         for points in collided_tiles:
             exit_value = sorted(points, key=lambda x: math.atan2(x[1] - self.rect.centery, x[0] - self.rect.centerx))
             # collided_points.append((exit_value[0], exit_value[-1]))  # Нужные точки уже отсортированные
+            values = (exit_value[-1], exit_value[0], self.count_iterable(exit_value[0]), self.count_iterable(exit_value[-1]))
             pygame.draw.polygon(
                 surface, 
                 COLORS['background_color'], 
-                (exit_value[-1], 
-                exit_value[0], 
-                self.count_iterable(exit_value[0]), 
-                self.count_iterable(exit_value[-1])), 
-                # width = 10,
+                values
                 )
-            # pygame.draw.circle(surface, (255, 0, 0), (exit_value[0]), 5.0)
-            # pygame.draw.circle(surface, (0, 255, 0), (exit_value[-1]), 5.0)
-            # pygame.draw.circle(surface, (255, 0, 0), self.count_iterable(exit_value[-1]), 5.0)
-            # pygame.draw.circle(surface, (0, 255, 0), self.count_iterable(exit_value[0]), 5.0)
+            # self.mask_image = self.image
+            # pygame.draw.polygon(
+            #     self.mask_image,
+            #     COLORS['background_color'],
+            #     values
+            # )
+            # self.mask_image.set_colorkey(COLORS['background_color'])
+            # self.mask = pygame.mask.from_surface(self.mask_image)
         
 
-    def count_iterable(self, value):
-        # interception_with_y, interception_with_x
-
-        # try:
-        #     inter_with_x = (-self.rect.centery*(value[0] - self.rect.centerx)/(value[1] - self.rect.centery)) + self.rect.centerx
-        # except ZeroDivisionError:
-        #     return [0, self.rect.centery]
-        # try:
-        #     inter_with_y = (-self.rect.centerx*(value[1] - self.rect.centery))/(value[1] - self.rect.centerx) + self.rect.centery
-        # except ZeroDivisionError:
-        #     return [self.rect.centerx, 0]
-        # # Я нашел ошибку в свете, он ищет ближайшее расстояние, а надо следующее
-        # if math.sqrt((self.rect.centerx - inter_with_x)**2 + (self.rect.centery)**2) <= math.sqrt((self.rect.centerx)**2 + (self.rect.centery - inter_with_y)**2):
-        #     return [inter_with_x, 0]
-        # else:
-        #     return [0, inter_with_y]
-
+    def count_iterable(self, value) -> tuple((int, int)):
         # Наша прямоя имеет вид 
         # (x - self.rect.centerx)/(value[0] - self.rect.centerx) = (y - self.rect.centery)/(value[1] - self.rect.centery)
         # Надо найти точки пересечения ее с прямыми {
@@ -197,7 +190,6 @@ class Light(pygame.sprite.Sprite):
         # y = CONSTANTS['HEIGHT']
         # }
         # k = (value[0] - self.rect.centerx)/(x - self.rect.centerx)
-
         x1, y1, x2, y2 = self.rect.centerx, self.rect.centery, value[0], value[1]
         
         try:
@@ -221,15 +213,16 @@ class Light(pygame.sprite.Sprite):
             yf = (0, x1)
         
         
-        # if math.sqrt((self.rect.centerx - xf[0])**2 + (self.rect.centery - xf[1])**2) <= math.sqrt((self.rect.centerx - yf[0])**2 + (self.rect.centery - yf[1])**2):
-        #     return xf
-        # else:
-        #     return yf
+        if math.sqrt((self.rect.centerx - xf[0])**2 + (self.rect.centery - xf[1])**2) <= math.sqrt((self.rect.centerx - yf[0])**2 + (self.rect.centery - yf[1])**2):
+            return xf
+        else:
+            return yf
         
         if self.rect.centerx - xf[0] + self.rect.centery - xf[1] >= self.rect.centerx - yf[0] + self.rect.centery - yf[1]:
             return xf
         else:
             return yf
+        # return xf
         
 
 

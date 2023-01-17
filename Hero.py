@@ -8,7 +8,8 @@ pygame.mixer.init()
 
 COLORS, CONSTANTS = load()
 
-WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
+if __name__ == '__main__':
+    WIN = pygame.display.set_mode((CONSTANTS['WIDTH'], CONSTANTS['HEIGHT']))
 
 
 class Hero(pygame.sprite.Sprite):
@@ -39,8 +40,7 @@ class Hero(pygame.sprite.Sprite):
             'current': 0
         }
 
-    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy, powerups: pygame.sprite.Group, events: pygame.event.get(), paused):
-        keys = pygame.key.get_pressed()
+    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, enemy, powerups: pygame.sprite.Group, events: pygame.event.get(), keys: pygame.key.get_pressed(), paused):
         if not paused and self.can_play:
             self.check_controls(keys, events)
             self.rect.y += self.current_speed['y']
@@ -101,7 +101,7 @@ class Hero(pygame.sprite.Sprite):
     def check_damage(self, enemy_group: pygame.sprite.Group, level: pygame.sprite.Group):
         # TODO: not optimal check for kill, better hadn't done it. It works optimal only with one enemy, so I will use it only with one enemy
         for enemy in enemy_group.sprites():
-            if pygame.sprite.collide_mask(self, enemy.light):
+            if pygame.sprite.collide_rect(self, enemy.light):
                 if not self.immortalTime['current']:
                     self.get_damage(1)
                     self.immortalTime['current'] = 1

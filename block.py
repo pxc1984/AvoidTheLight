@@ -16,4 +16,3 @@ class Block(pygame.sprite.Sprite):
 
     def update(self):
         WIN.blit(self.image, self.rect)
-        # pygame.draw.rect(WIN, COLORS['background_color'], self.rect)

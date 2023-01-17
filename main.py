@@ -7,17 +7,17 @@ import Hero
 import random
 import block
 
+# I had used this to find, which parts are freezing
 import cProfile
 import pstats
-
+# <--
 
 # Originally, map was made to play on 16x9 scale
 # but not every solution can be used to play
-# Tested solutions are those, where width / height is ~1.78
+# Tested solutions
+#  are those, where width / height is 16 / 9
 # Examples are: 1920x1080, 640x360
 
-# Another comment is about pause menu
-# I don't have strict design, and because of that, my pause menu is such a mess. If you want to change it, go to line 144
 
 current_map = 0
 maps = [  # map is 16x9
@@ -33,7 +33,7 @@ maps = [  # map is 16x9
         '+...............',
     ],
     [  # this is a debug map
-        '-..............-',
+        '................',
         '.@..............',
         '................',
         '................',
@@ -41,16 +41,12 @@ maps = [  # map is 16x9
         '........-.......',
         '................',
         '..............#.',
-        '-..............-',
         '................',
-        '-..............-',
+        '................',
+        '................',
     ]
 ]
 
-# Tiles = pygame.sprite.Group()
-# Heroes = pygame.sprite.Group()
-# Enemies = pygame.sprite.Group()
-# Powerups = pygame.sprite.Group()
 def generate_map(temp):
     map = maps[temp]
     for row, line in enumerate(map):
@@ -66,6 +62,9 @@ def generate_map(temp):
                 Powerups.add(powerup.PowerUp(column, row))
 
 def draw_pause():
+    '''
+    This function draws pause menu over the screen
+    '''
     global paused, run
     if button_resume.draw(WIN):
         paused = False
@@ -80,7 +79,9 @@ def main():
     # initializing map
 
     while run:
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        keys = pygame.key.get_pressed()
+        for event in events:
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN:
@@ -90,27 +91,13 @@ def main():
         WIN.fill(COLORS['background_color'])  # фон
         if Heroes.sprites()[0].can_play:
             Enemies.sprites()[0].light.update(WIN, Enemies.sprites()[0], Tiles)  # Light 6
-            draw_text(
-                WIN, 'press SPACE to pause',
-                COLORS['text_color'],
-                CONSTANTS['WIDTH'] * 0.234,
-                CONSTANTS['HEIGHT'] * 0.39, 
-                hint_font)  # Hint 5
-            draw_text(
-                WIN, 
-                str(round(1000 / fps)), 
-                COLORS['text_color'], 
-                CONSTANTS['WIDTH'] * 0.9375,
-                0, 
-                fps_font)  # FPS 5
+            draw_text(WIN, 'press SPACE to pause', COLORS['text_color'], CONSTANTS['WIDTH'] * 0.234, CONSTANTS['HEIGHT'] * 0.39, hint_font)  # Hint 5
+        draw_text(WIN, str(round(1000 / fps)), COLORS['text_color'], CONSTANTS['WIDTH'] * 0.9375, 0, fps_font)  # FPS 5
+        if Heroes.sprites()[0].can_play:
             Tiles.update()  # Blocks 4
             Powerups.update() # Powerups
-            Enemies.update(
-                WIN, 
-                Tiles, 
-                pygame.event.get(), 
-                paused)  # Enemy 3
-            Heroes.update(WIN, Tiles, Enemies, Powerups, pygame.event.get(), paused)  # Hero 2
+            Enemies.update(WIN, Tiles, events, keys, paused)  # Enemy 3
+            Heroes.update(WIN, Tiles, Enemies, Powerups, events, keys, paused)  # Hero 2
         if not Heroes.sprites()[0].can_play:
             game_over()  # Game Over 2
         draw_pause() if paused else None  # Pause 1
@@ -121,6 +108,10 @@ def main():
 
 
 def game_over():
+    '''
+    this function shows the GAME OVER menu
+    animations on game over must be placed here
+    '''
     draw_text(WIN, 'GAME OVER', COLORS['game_over'], CONSTANTS['WIDTH'] * 0.23, CONSTANTS['HEIGHT'] * 0.39, over_font)
 
 
@@ -143,10 +134,10 @@ if __name__ == '__main__':
     Powerups = pygame.sprite.Group()
     generate_map(current_map)
 
+    # Задание кнопок паузы
     resume_img = pygame.image.load('data/gfx/button_resume.png')
     options_img = pygame.image.load('data/gfx/button_options.png')
     quit_img = pygame.image.load('data/gfx/button_quit.png')
-
     button_resume = data.gfx.button.Button(
         CONSTANTS['WIDTH'] * 0.21, 
         CONSTANTS['HEIGHT'] * 0.12, 
@@ -171,7 +162,7 @@ if __name__ == '__main__':
     paused = False
     run = True
 
-    with cProfile.Profile() as pr:
+    with cProfile.Profile() as pr:  # Это надо чтобы замерить, в каких местах моя программа медленная
         main()
 
     stats = pstats.Stats(pr)
