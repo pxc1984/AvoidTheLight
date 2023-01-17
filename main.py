@@ -92,12 +92,12 @@ def main():
         if Heroes.sprites()[0].can_play:
             Enemies.sprites()[0].light.update(screen, Enemies.sprites()[0], Tiles)  # Light 6
             draw_text(screen, 'press SPACE to pause', COLORS['text_color'], CONSTANTS['WIDTH'] * 0.234, CONSTANTS['HEIGHT'] * 0.39, hint_font)  # Hint 5
-        draw_text(screen, str(round(1000 / fps)), COLORS['text_color'], CONSTANTS['WIDTH'] * 0.9375, 0, fps_font)  # FPS 5
+        draw_text(screen, str(fps), COLORS['text_color'], CONSTANTS['WIDTH'] * 0.9375, 0, fps_font)  # FPS 5
         if Heroes.sprites()[0].can_play:
             Tiles.update()  # Blocks 4
             Powerups.update() # Powerups
-            Enemies.update(screen, Tiles, events, keys, paused)  # Enemy 3
-            Heroes.update(screen, Tiles, Enemies, Powerups, events, keys, paused)  # Hero 2
+            Enemies.update(fps, screen, Tiles, events, keys, paused)  # Enemy 3
+            Heroes.update(fps, screen, Tiles, Enemies, Powerups, events, keys, paused)  # Hero 2
         if not Heroes.sprites()[0].can_play:
             for i in range(1, 4):
                 game_over()  # Game Over 2
@@ -110,7 +110,7 @@ def main():
         draw_pause() if paused else None  # Pause 1
         pygame.display.flip()
 
-        fps = clock.tick(CONSTANTS['FPS'])
+        fps = round(1000 / clock.tick(CONSTANTS['FPS']))
     pygame.quit()
 
 
