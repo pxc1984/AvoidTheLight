@@ -40,7 +40,11 @@ class Enemy(pygame.sprite.Sprite):
         }
         self.light = Light(self.rect.center[0], self.rect.center[1], self)
 
-    def update(self, surface: pygame.surface.Surface, level: pygame.sprite.Group, events: pygame.event.get(), keys: pygame.key.get_pressed(), paused):
+    def update(self, fps, surface: pygame.surface.Surface, level: pygame.sprite.Group, events: pygame.event.get(), keys: pygame.key.get_pressed(), paused):
+        self.move_speed = {  # сделать зависимость от кадров
+            'x': round(CONSTANTS['WIDTH'] * 0.15 / fps),
+            'y': round(CONSTANTS['HEIGHT'] * 0.25 / fps)
+        }
         if not paused:
             self.calculate_movement(keys)
             self.rect.y += self.current_speed['y']
@@ -126,7 +130,7 @@ class Light(pygame.sprite.Sprite):
         self.image = pygame.surface.Surface((enemy.brightness*2, enemy.brightness*2))
         self.image.fill(COLORS['background_color'])
         for i in range(1, len(COLORS['saturation_colors']) + 1):
-            pygame.draw.circle(self.image, COLORS['saturation_colors'][-i], (enemy.brightness, enemy.brightness), enemy.brightness - i * 20)
+            pygame.draw.circle(self.image, COLORS['saturation_colors'][-i], (enemy.brightness, enemy.brightness), enemy.brightness - i * (CONSTANTS['HEIGHT'] / 54))
         self.rect = self.image.get_rect(x=x, y=y)
         # self.mask_image = self.image
         # self.mask_image.set_colorkey(COLORS['background_color'])
@@ -200,7 +204,12 @@ class Light(pygame.sprite.Sprite):
             else:
                 xf = (xh, CONSTANTS['HEIGHT'])
         except ZeroDivisionError:
-            xf = (y1, 0)
+            xf1 = (0, y1)
+            xf2 = (CONSTANTS['WIDTH'], y1)
+            if x1 <= CONSTANTS['WIDTH']:
+                return xf1
+            else:
+                return xf2
         
         try:
             y0 = -x1*(y2-y1)/(x2-x1) + y1  # подставляю x = 0
@@ -210,13 +219,13 @@ class Light(pygame.sprite.Sprite):
             else:
                 yf = (CONSTANTS['WIDTH'], yw)
         except ZeroDivisionError:
-            yf = (0, x1)
+            yf1 = (0, y1)
+            yf2 = (CONSTANTS['WIDTH'], y1)
+            if y1 <= CONSTANTS['HEIGHT']:
+                return yf1
+            else:
+                return yf2
         
-        
-        if math.sqrt((self.rect.centerx - xf[0])**2 + (self.rect.centery - xf[1])**2) <= math.sqrt((self.rect.centerx - yf[0])**2 + (self.rect.centery - yf[1])**2):
-            return xf
-        else:
-            return yf
         
         if self.rect.centerx - xf[0] + self.rect.centery - xf[1] >= self.rect.centerx - yf[0] + self.rect.centery - yf[1]:
             return xf
