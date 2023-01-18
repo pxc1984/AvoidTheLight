@@ -139,6 +139,8 @@ class Light(pygame.sprite.Sprite):
     def update(self, surface: pygame.surface.Surface, enemy: Enemy, level: pygame.sprite.Group):
         self.draw(surface, enemy)
         self.redraw(surface, level, enemy)
+        # surface.blit(self.mask_image, (400, 200))
+        # surface.blit(self.image, (0, 200))
 
     def draw(self, surface, enemy: Enemy):
         '''
@@ -173,7 +175,7 @@ class Light(pygame.sprite.Sprite):
                 surface, 
                 COLORS['background_color'], 
                 values
-                )
+            )
             # self.mask_image = self.image
             # pygame.draw.polygon(
             #     self.mask_image,

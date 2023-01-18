@@ -138,8 +138,6 @@ def update_health(screen, Heroes: pygame.sprite.Group()):
         hp_list.append(0)
     for n, i in enumerate(hp_list):
         Hearts.sprites()[n].set(i)
-    
-    print(hp_list)
     Hearts.update(screen)
 
 
